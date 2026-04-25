@@ -1,0 +1,2048 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lujain Alaydie — iOS Developer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,400;0,600;0,700;0,800;0,900;1,800&family=Courier+Prime:ital,wght@0,400;0,700;1,400&family=Caveat:wght@700&display=swap" rel="stylesheet">
+  <style>
+    /* ═══════════════════════════════════════════
+       RESET & BASE
+    ═══════════════════════════════════════════ */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --cream:      #F7EED8;
+      --teal:       #00796B;
+      --teal-dark:  #004D40;
+      --teal-board: #005C55;
+      --teal-rim:   #4DB6AC;
+      --red:        #C62828;
+      --red-dark:   #7F0000;
+      --red-hi:     #EF5350;
+      --wood:       #6D4C41;
+      --wood-hi:    #8D6E63;
+      --outline:    #1C1C1C;
+      --green:      #388E3C;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--cream);
+      font-family: 'Nunito', sans-serif;
+      overflow-x: hidden;
+      min-height: 100vh;
+    }
+
+    /* Subtle paper grain */
+    body::after {
+      content: '';
+      position: fixed; inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.028'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 9000;
+    }
+
+    /* ═══════════════════════════════════════════
+       SECTION 1 — WALL
+    ═══════════════════════════════════════════ */
+    .wall {
+      background: var(--cream);
+      padding: 28px 20px 0;
+      position: relative;
+    }
+
+    /* PEGBOARD */
+    .pegboard-wrap {
+      max-width: 960px;
+      margin: 0 auto;
+      background: var(--teal-rim);
+      border-radius: 30px;
+      padding: 7px;
+      box-shadow:
+        0 0 0 4px var(--outline),
+        0 12px 40px rgba(0,0,0,0.32),
+        0 4px 12px rgba(0,0,0,0.18);
+    }
+
+    .pegboard {
+      background-color: var(--teal-board);
+      background-image: radial-gradient(circle, rgba(0,0,0,0.45) 2.2px, transparent 2.2px);
+      background-size: 22px 22px;
+      border-radius: 24px;
+      padding: 26px 28px 22px;
+      position: relative;
+    }
+
+    /* Top bar: logo + tagline */
+    .pb-topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 22px;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .ln-logo {
+      background: linear-gradient(135deg, #004D40, #00796B);
+      border: 5px solid white;
+      border-radius: 16px;
+      box-shadow: 0 0 0 3px var(--outline), 4px 6px 16px rgba(0,0,0,0.35);
+      width: 68px; height: 68px;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .ln-logo svg { width: 46px; height: 46px; }
+
+    .pb-tagline {
+      background: rgba(0,0,0,0.25);
+      border-radius: 12px;
+      padding: 8px 16px;
+      flex: 1; max-width: 480px;
+    }
+    .pb-tagline p {
+      color: rgba(255,255,255,0.9);
+      font-size: 13px;
+      font-weight: 700;
+      font-style: italic;
+      font-family: 'Caveat', cursive;
+      font-size: 16px;
+    }
+
+    /* Wizard cat pixel art block */
+    .wizard-cat-wrap {
+      background: #FF8A65;
+      border: 5px solid white;
+      border-radius: 16px;
+      box-shadow: 0 0 0 3px var(--outline), 4px 6px 16px rgba(0,0,0,0.35);
+      padding: 6px;
+      flex-shrink: 0;
+      transition: transform 0.22s cubic-bezier(.34,1.56,.64,1);
+      cursor: default;
+    }
+    .wizard-cat-wrap:hover { transform: scale(1.1) rotate(-4deg) translateY(-4px); }
+
+/* APP PINS ROW */
+    .pins-row {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 18px;
+      margin-bottom: 16px;
+    }
+
+    .app-pin {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0px;
+      cursor: pointer;
+      text-decoration: none;
+      /* Base shadow for the "sticker" feel */
+      filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3));
+      transition: transform 0.22s cubic-bezier(.34,1.56,.64,1), filter 0.22s;
+    }
+
+    .app-pin:hover {
+      transform: scale(1.1) translateY(-8px);
+      filter: drop-shadow(0 10px 20px rgba(0,0,0,0.4));
+    }
+
+    /* Container for the circle sticker and physical pin */
+    .pin-body {
+      position: relative;
+      width: 72px;  /* Defined size for alignment */
+      height: 72px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* The Small Physical Pin Head (drawn with CSS) */
+    .pin-body::before {
+      content: '';
+      position: absolute;
+      top: -4px; /* Positioned on the edge of the circle */
+      left: 50%;
+      transform: translateX(-50%);
+      width: 14px;
+      height: 14px;
+      background: radial-gradient(circle at 30% 30%, #ff6b6b, #d32f2f);
+      border: 2px solid rgba(0,0,0,0.2);
+      border-radius: 50%;
+      z-index: 10; /* Sits on top of everything */
+      box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    }
+
+    /* The Circular App Sticker */
+    .pin-icon {
+      /* Remove absolute positioning to center naturally in pin-body */
+      position: relative;
+      width: 64px; 
+      height: 64px;
+      border-radius: 50%;
+      overflow: hidden;
+      background: white;
+      /* Thick white border to look like a sticker */
+      border: 4px solid white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .pin-icon img {
+      width: 100%; 
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .pin-label {
+      background: white;
+      border: 3px solid white;
+      border-radius: 20px;
+      padding: 3px 11px;
+      font-size: 10px;
+      font-weight: 900;
+      color: var(--teal-dark);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.22);
+      margin-top: 4px; /* Increased margin for circle shape */
+      white-space: nowrap;
+      z-index: 5;
+    }
+
+    /* Post-its row */
+    .postits-row {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      padding-right: 8px;
+    }
+
+    .postit {
+      padding: 14px 16px 12px;
+      border-radius: 3px;
+      font-family: 'Caveat', cursive;
+      font-weight: 700;
+      font-size: 16px;
+      text-align: center;
+      line-height: 1.3;
+      position: relative;
+    }
+    .postit::before {
+      content: '';
+      position: absolute;
+      top: -10px; left: 50%;
+      transform: translateX(-50%);
+      width: 14px; height: 14px;
+      border-radius: 50%;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.45);
+    }
+    .postit-1 {
+      background: #FFAB91;
+      color: #5D2A00;
+      transform: rotate(-5deg);
+      box-shadow: 3px 5px 14px rgba(0,0,0,0.28);
+    }
+    .postit-1::before { background: radial-gradient(circle at 38% 35%, #EF5350, #7F0000); }
+    .postit-2 {
+      background: #B2EBF2;
+      color: #004D5F;
+      transform: rotate(4deg);
+      box-shadow: 3px 5px 14px rgba(0,0,0,0.28);
+      margin-top: -6px;
+    }
+    .postit-2::before { background: radial-gradient(circle at 38% 35%, #26C6DA, #006064); }
+
+    /* ═══════════════════════════════════════════
+       SECTION 2 — SHELF
+    ═══════════════════════════════════════════ */
+    .shelf-section {
+      background: var(--cream);
+      padding: 28px 20px 16px;
+    }
+
+    .shelf-plank {
+      max-width: 960px;
+      margin: 0 auto;
+    }
+
+    /* Shelf board above items */
+    .shelf-board {
+      height: 18px;
+      background: linear-gradient(to bottom, #A1887F, #795548 60%, #5D4037);
+      border-radius: 6px 6px 0 0;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.22), 0 -1px 0 rgba(255,255,255,0.1) inset;
+      position: relative;
+    }
+    .shelf-board::before, .shelf-board::after {
+      content: '';
+      position: absolute;
+      bottom: 4px; width: 12px; height: 8px;
+      background: #8D6E63;
+      border-radius: 3px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+    }
+    .shelf-board::before { left: 12px; }
+    .shelf-board::after  { right: 12px; }
+
+    .shelf-items {
+      display: flex;
+      justify-content: center;
+      gap: 32px;
+      flex-wrap: wrap;
+      align-items: flex-start;
+      padding: 0 8px;
+    }
+
+    /* ── TOOLBOX ── */
+    .toolbox-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      filter: drop-shadow(4px 10px 22px rgba(0,0,0,0.38));
+    }
+
+    .toolbox-handle {
+      width: 84px; height: 20px;
+      background: linear-gradient(to right, #9E9E9E 0%, #E0E0E0 40%, #BDBDBD 70%, #9E9E9E 100%);
+      border: 2.5px solid #616161;
+      border-radius: 12px 12px 0 0;
+      margin: 0 auto;
+      box-shadow: 0 -2px 5px rgba(0,0,0,0.22);
+    }
+
+    .toolbox-lid {
+      background: linear-gradient(165deg, #EF9A9A 0%, #E53935 40%, #C62828 70%, #B71C1C 100%);
+      border: 3px solid var(--red-dark);
+      border-bottom: none;
+      border-radius: 14px 14px 0 0;
+      padding: 9px 18px 6px;
+      min-width: 260px;
+      position: relative;
+    }
+    .toolbox-lid-stripe {
+      height: 3px;
+      background: rgba(255,255,255,0.18);
+      border-radius: 2px;
+      margin-bottom: 2px;
+    }
+    .toolbox-lid-label {
+      text-align: center;
+      color: white;
+      font-weight: 900;
+      font-size: 15px;
+      letter-spacing: 0.06em;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.4);
+    }
+    .toolbox-clasp {
+      position: absolute;
+      bottom: -10px; left: 50%;
+      transform: translateX(-50%);
+      width: 42px; height: 18px;
+      background: linear-gradient(to bottom, #FFE082, #FFA000);
+      border: 2.5px solid #5D4037;
+      border-radius: 6px;
+      z-index: 3;
+      box-shadow: 0 3px 6px rgba(0,0,0,0.3);
+    }
+    .toolbox-clasp::after {
+      content: '';
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      width: 18px; height: 6px;
+      background: rgba(0,0,0,0.2);
+      border-radius: 3px;
+    }
+
+    .toolbox-body {
+      background: linear-gradient(165deg, #D32F2F 0%, #B71C1C 55%, #8B0000 100%);
+      border: 3px solid var(--red-dark);
+      border-top: 2px solid rgba(0,0,0,0.2);
+      border-radius: 0 0 18px 18px;
+      padding: 18px 16px 14px;
+      min-width: 260px;
+      position: relative;
+      box-shadow: 0 8px 0 #5D0000, 0 10px 24px rgba(0,0,0,0.28);
+    }
+
+    /* Horizontal stripes on body for metal look */
+    .toolbox-body::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 0 0 18px 18px;
+      background: repeating-linear-gradient(
+        to bottom,
+        rgba(255,255,255,0.04) 0px, rgba(255,255,255,0.04) 4px,
+        transparent 4px, transparent 10px
+      );
+      pointer-events: none;
+    }
+
+    .tools-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+    }
+
+    .skill-icon {
+      background: white;
+      border: 4px solid white;
+      border-radius: 14px;
+      width: 68px; height: 68px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      overflow: visible;
+      box-shadow: 0 0 0 2.5px var(--outline), 3px 4px 10px rgba(0,0,0,0.25);
+      transition: transform 0.2s cubic-bezier(.34,1.56,.64,1);
+      position: relative;
+      cursor: default;
+      flex-shrink: 0;
+    }
+    .skill-icon:hover { transform: scale(1.12) rotate(-4deg); }
+    .skill-icon img {
+      width: 50px; height: 50px;
+      object-fit: contain;
+      display: block;
+    }
+    .skill-name {
+      position: absolute;
+      bottom: -14px; left: 50%;
+      transform: translateX(-50%);
+      background: white;
+      border-radius: 10px;
+      padding: 1px 7px;
+      font-size: 8px;
+      font-weight: 900;
+      color: #333;
+      white-space: nowrap;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+    }
+
+    .toolbox-rivets {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 14px;
+    }
+    .rivet {
+      width: 11px; height: 11px;
+      background: radial-gradient(circle at 35% 35%, #EF9A9A, #B71C1C);
+      border: 1.5px solid #7F0000;
+      border-radius: 50%;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+    }
+
+    /* ── PHOTO ALBUM ── */
+    .album-wrap {
+      cursor: pointer;
+      filter: drop-shadow(4px 10px 22px rgba(0,0,0,0.32));
+      transition: transform 0.22s cubic-bezier(.34,1.56,.64,1);
+    }
+    .album-wrap:hover { transform: scale(1.04) rotate(1.5deg) translateY(-4px); }
+
+    .album-book {
+      display: flex;
+      border-radius: 10px 16px 16px 10px;
+      border: 3px solid var(--outline);
+      overflow: hidden;
+      position: relative;
+      box-shadow: 6px 8px 0 rgba(0,0,0,0.22);
+    }
+    .album-spine {
+      width: 18px;
+      background: linear-gradient(to right, #BF360C, #D84315, #E64A19);
+      flex-shrink: 0;
+      position: relative;
+    }
+    .album-spine::before {
+      content: '';
+      position: absolute;
+      top: 0; right: 0; bottom: 0;
+      width: 3px;
+      background: rgba(0,0,0,0.15);
+    }
+    .album-cover {
+      width: 180px;
+      background: linear-gradient(160deg, #FF8A65, #FF6F00);
+      padding: 12px;
+      position: relative;
+      min-height: 220px;
+    }
+
+    /* Patchwork patches */
+    .patch {
+      position: absolute;
+      border: 3px solid rgba(255,255,255,0.7);
+      border-radius: 5px;
+    }
+
+    .album-title {
+      position: absolute;
+      top: 10px; left: 10px;
+      background: rgba(255,255,255,0.92);
+      border: 2px solid white;
+      border-radius: 8px;
+      padding: 5px 10px;
+      font-weight: 900;
+      font-size: 12px;
+      color: #BF360C;
+      box-shadow: 1px 2px 6px rgba(0,0,0,0.2);
+    }
+
+    .album-cat-sticker {
+      position: absolute;
+      bottom: 38px; right: 8px;
+      font-size: 36px;
+      filter: drop-shadow(0 3px 5px rgba(0,0,0,0.28));
+    }
+
+    .album-photos {
+      position: absolute;
+      bottom: 8px; left: 8px; right: 8px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 5px;
+    }
+    .album-thumb {
+      height: 52px;
+      border-radius: 6px;
+      border: 2.5px solid white;
+      overflow: hidden;
+      background: #78909C;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 22px;
+    }
+    .album-thumb img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+    }
+
+    /* ── CLIPBOARD ── */
+    .clipboard-wrap {
+      filter: drop-shadow(4px 10px 22px rgba(0,0,0,0.32));
+    }
+
+    .clipboard-board {
+      background: linear-gradient(145deg, #8D6E63, #795548 40%, #6D4C41);
+      border: 3px solid var(--outline);
+      border-radius: 14px;
+      padding: 24px 14px 16px;
+      width: 200px;
+      position: relative;
+      box-shadow: 4px 6px 0 rgba(0,0,0,0.25);
+    }
+
+    .clip-clamp {
+      position: absolute;
+      top: -12px; left: 50%;
+      transform: translateX(-50%);
+      width: 62px;
+    }
+    .clip-top {
+      height: 24px;
+      background: linear-gradient(to bottom, #E0E0E0, #BDBDBD 60%, #9E9E9E);
+      border: 2.5px solid #616161;
+      border-radius: 8px 8px 0 0;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .clip-spring-bar {
+      width: 34px; height: 10px;
+      background: linear-gradient(to bottom, #9E9E9E, #757575);
+      border: 1.5px solid #616161;
+      border-radius: 2px;
+    }
+    .clip-bottom {
+      height: 10px;
+      background: linear-gradient(to bottom, #9E9E9E, #757575);
+      border: 1.5px solid #616161;
+      border-radius: 0 0 6px 6px;
+      margin: 0 8px;
+    }
+
+    .resume-paper {
+      background: #FEFEFE;
+      border-radius: 4px;
+      padding: 12px 10px 10px;
+      box-shadow: 1px 2px 8px rgba(0,0,0,0.16);
+    }
+
+    .resume-header {
+      background: var(--teal);
+      margin: -12px -10px 8px;
+      border-radius: 4px 4px 0 0;
+      padding: 6px 8px;
+    }
+
+    .res-line {
+      height: 5px;
+      border-radius: 3px;
+      margin-bottom: 4px;
+      background: #E0E0E0;
+    }
+    .res-line.teal  { background: #B2DFDB; }
+    .res-line.dark  { background: #BDBDBD; }
+    .res-line.head  { background: #E0E0E0; height: 7px; }
+
+    .skill-pill {
+      display: inline-block;
+      padding: 2px 6px;
+      border-radius: 8px;
+      font-size: 7px;
+      font-weight: 800;
+      margin: 1px 1px;
+    }
+
+    .resume-dl {
+      display: block;
+      text-align: center;
+      margin-top: 10px;
+      background: linear-gradient(135deg, var(--teal), var(--teal-dark));
+      color: white;
+      text-decoration: none;
+      font-size: 9px;
+      font-weight: 900;
+      padding: 6px;
+      border-radius: 8px;
+      letter-spacing: 0.05em;
+      box-shadow: 0 3px 0 var(--teal-dark), 0 4px 10px rgba(0,0,0,0.2);
+      transition: transform 0.15s;
+    }
+    .resume-dl:hover { transform: translateY(-1px); }
+
+    /* ═══════════════════════════════════════════
+       SECTION 3 — DESK
+    ═══════════════════════════════════════════ */
+    .desk-section {
+      position: relative;
+      padding-bottom: 40px;
+    }
+
+    /* Desk edge */
+    .desk-edge {
+      height: 22px;
+      background: linear-gradient(to bottom, #A1887F, #8D6E63);
+      max-width: 960px;
+      margin: 0 auto;
+      border-radius: 6px 6px 0 0;
+      box-shadow: 0 -3px 0 #BCAAA4 inset;
+    }
+
+    .desk-surface {
+      background: linear-gradient(180deg, #8D6E63 0%, #795548 30%, #6D4C41 100%);
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 20px 16px 36px;
+      border-radius: 0 0 20px 20px;
+      box-shadow: 0 18px 50px rgba(0,0,0,0.35), 0 6px 20px rgba(0,0,0,0.2);
+      position: relative;
+      overflow: visible;
+    }
+
+    /* Wood grain overlay */
+    .desk-surface::before {
+      content: '';
+      position: absolute; inset: 0;
+      border-radius: inherit;
+      background: repeating-linear-gradient(
+        92deg,
+        transparent, transparent 60px,
+        rgba(0,0,0,0.04) 60px, rgba(0,0,0,0.04) 61px
+      );
+      pointer-events: none;
+    }
+
+    .desk-row {
+      display: flex;
+      align-items: flex-end;
+      gap: 0;
+      position: relative;
+    }
+
+    /* ── LEFT: CRAFT AREA ── */
+    .craft-area {
+      flex: 0 0 auto;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0;
+      position: relative;
+      z-index: 2;
+      margin-right: -12px;
+    }
+
+    .cricut-mat {
+      width: 210px;
+      height: 350px;
+      background: var(--green);
+      background-image:
+        linear-gradient(rgba(255,255,255,0.13) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.13) 1px, transparent 1px);
+      background-size: 14px 14px;
+      border: 3px solid #1B5E20;
+      border-radius: 8px;
+      box-shadow: 3px 5px 16px rgba(0,0,0,0.3), 0 2px 0 #A5D6A7 inset;
+      position: relative;
+      flex-shrink: 0;
+    }
+
+    /* Cricut brand labels on mat */
+    .mat-label {
+      position: absolute;
+      font-style: italic;
+      font-weight: 900;
+      font-size: 11px;
+      color: rgba(255,255,255,0.4);
+      letter-spacing: 0.12em;
+    }
+
+    /* Tools on mat */
+    .mat-tools {
+      position: absolute;
+      top: 10px; left: 10px;
+      display: flex;
+      gap: 5px;
+      align-items: flex-end;
+    }
+
+    .hook-tool {
+      border-radius: 3px;
+      position: relative;
+    }
+    .hook-handle { border-radius: 3px 3px 0 0; }
+    .hook-tip {
+      width: 5px; height: 10px;
+      background: #9E9E9E;
+      border-radius: 0 0 4px 2px;
+      border: 1px solid #757575;
+    }
+
+    /* Washi tape rolls */
+    .washi-tape {
+      border-radius: 50%;
+      position: absolute;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.25), 0 0 0 2px rgba(0,0,0,0.15);
+    }
+    .washi-inner {
+      position: absolute;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.3);
+    }
+
+    /* CSS gear wheels */
+    .gear-wrap {
+      position: absolute;
+    }
+
+    /* Cat sticker on mat */
+    .mat-cat-sticker {
+      position: absolute;
+      bottom: 10px; right: 10px;
+      font-size: 30px;
+      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+    }
+
+    /* YARN PILE - overlaps mat and laptop area */
+    .yarn-pile {
+      display: flex;
+      flex-wrap: wrap;
+      width: 175px;
+      margin-top: -28px;
+      margin-left: 8px;
+      position: relative;
+      z-index: 3;
+      gap: 3px;
+    }
+
+    .yarn {
+      border-radius: 50%;
+      position: relative;
+      flex-shrink: 0;
+      box-shadow: inset -4px -4px 10px rgba(0,0,0,0.25), 2px 3px 8px rgba(0,0,0,0.22);
+    }
+    .yarn::before {
+      content: '';
+      position: absolute; inset: 3px;
+      border-radius: 50%;
+      background: repeating-linear-gradient(
+        42deg,
+        transparent, transparent 4px,
+        rgba(255,255,255,0.22) 4px, rgba(255,255,255,0.22) 5.5px
+      );
+    }
+    .yarn::after {
+      content: '';
+      position: absolute; inset: 3px;
+      border-radius: 50%;
+      background: repeating-linear-gradient(
+        -50deg,
+        transparent, transparent 4px,
+        rgba(0,0,0,0.09) 4px, rgba(0,0,0,0.09) 5.5px
+      );
+    }
+
+    /* GLITTER BOTTLES */
+    .glitter-row {
+      display: flex;
+      align-items: flex-end;
+      gap: 5px;
+      margin-top: 8px;
+      margin-left: 4px;
+    }
+
+    .glitter-bottle {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+    }
+    .bottle-cap {
+      border-radius: 3px 3px 0 0;
+      width: 100%;
+    }
+    .bottle-body {
+      border-radius: 2px 2px 5px 5px;
+      position: relative;
+      overflow: hidden;
+    }
+    .bottle-shine {
+      position: absolute;
+      top: 4px; left: 3px;
+      width: 4px;
+      background: rgba(255,255,255,0.45);
+      border-radius: 2px;
+    }
+    .bottle-glitter {
+      position: absolute;
+      inset: 0;
+      background-image: radial-gradient(circle, rgba(255,255,255,0.6) 1px, transparent 1px);
+      background-size: 4px 4px;
+      opacity: 0.5;
+    }
+
+    /* ── CENTER: LAPTOP ── */
+    .laptop-area {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+      z-index: 4;
+      padding: 0 10px;
+    }
+
+    .laptop-wrap {
+      width: 100%;
+      max-width: 340px;
+      filter: drop-shadow(0 12px 30px rgba(0,0,0,0.45));
+    }
+
+    .laptop-lid {
+      background: linear-gradient(160deg, #4DB6AC 0%, #26A69A 50%, #00796B 100%);
+      border: 3.5px solid #003D35;
+      border-radius: 16px 16px 6px 6px;
+      padding: 10px 10px 6px;
+      position: relative;
+    }
+    .laptop-lid::before {
+      content: '';
+      position: absolute; inset: 0;
+      border-radius: inherit;
+      background: linear-gradient(to bottom right, rgba(255,255,255,0.12), transparent 50%);
+      pointer-events: none;
+    }
+
+    .laptop-cam {
+      width: 8px; height: 8px;
+      background: #002B25;
+      border-radius: 50%;
+      margin: 0 auto 6px;
+      box-shadow: 0 0 0 2px rgba(255,255,255,0.15);
+    }
+
+    .terminal {
+      background: #0D1117;
+      border-radius: 10px;
+      font-family: 'Courier Prime', 'Courier New', monospace;
+      font-size: 12.5px;
+      padding: 12px 14px;
+      min-height: 168px;
+      position: relative;
+      overflow: hidden;
+      border: 2px solid rgba(255,255,255,0.06);
+    }
+
+    .term-titlebar {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+    .term-dot {
+      width: 10px; height: 10px;
+      border-radius: 50%;
+    }
+    .term-title-text {
+      flex: 1; text-align: center;
+      font-size: 10px; color: #555;
+      font-family: 'Nunito', sans-serif;
+      letter-spacing: 0.05em;
+    }
+
+    .term-line { line-height: 1.75; }
+    .t-prompt  { color: #4ade80; }
+    .t-key     { color: #f97316; font-weight: 700; }
+    .t-str     { color: #60a5fa; }
+    .t-cmt     { color: #6b7280; font-style: italic; }
+    .t-res     { color: #a3e635; }
+    .t-cursor  {
+      display: inline-block;
+      width: 8px; height: 13px;
+      background: #4ade80;
+      vertical-align: text-bottom;
+      animation: blink 1s step-end infinite;
+    }
+    @keyframes blink { 50% { opacity: 0; } }
+
+    /* Hinge */
+    .laptop-hinge {
+      height: 7px;
+      background: linear-gradient(to bottom, #002B25, #001A16);
+      border-left: 3.5px solid #003D35;
+      border-right: 3.5px solid #003D35;
+      margin: 0 24px;
+    }
+
+    .laptop-base {
+      background: linear-gradient(165deg, #26A69A 0%, #00897B 50%, #00695C 100%);
+      border: 3.5px solid #003D35;
+      border-top: none;
+      border-radius: 4px 4px 16px 16px;
+      padding: 8px 14px 10px;
+      box-shadow: 0 7px 0 #002B25, 0 10px 24px rgba(0,0,0,0.3);
+    }
+
+    .kb-row {
+      display: grid;
+      grid-template-columns: repeat(13, 1fr);
+      gap: 2px;
+      margin-bottom: 4px;
+    }
+    .kb-key {
+      height: 8px;
+      background: rgba(0,0,0,0.18);
+      border-radius: 2px;
+      border-bottom: 2px solid rgba(0,0,0,0.25);
+    }
+
+    .trackpad {
+      width: 80px; height: 15px;
+      background: rgba(0,0,0,0.15);
+      border: 1.5px solid rgba(0,0,0,0.12);
+      border-radius: 5px;
+      margin: 4px auto 0;
+    }
+
+    /* Laptop stickers */
+    .laptop-stickers {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      margin-top: 6px;
+    }
+    .lap-sticker {
+      background: white;
+      border: 3px solid white;
+      border-radius: 10px;
+      padding: 3px 6px;
+      font-size: 14px;
+      box-shadow: 0 0 0 2px var(--outline), 2px 3px 8px rgba(0,0,0,0.25);
+      line-height: 1;
+    }
+
+    /* Keychains hanging below laptop */
+    .keychains {
+      display: flex;
+      gap: 16px;
+      align-items: flex-start;
+      margin-top: 2px;
+      position: relative;
+    }
+    .keychain-string {
+      width: 2px;
+      background: rgba(0,0,0,0.3);
+      margin: 0 auto;
+    }
+    .keychain-charm {
+      font-size: 16px;
+      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.35));
+      line-height: 1;
+    }
+
+    /* ── RIGHT: CAT + CONTACT ── */
+    .contact-area {
+      flex: 0 0 auto;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      position: relative;
+      z-index: 3;
+      margin-left: -8px;
+    }
+
+    /* CSS Cat Mascot */
+    .cat-svg-wrap {
+      filter: drop-shadow(3px 6px 14px rgba(0,0,0,0.35));
+    }
+
+    /* POSTCARD / CONTACT */
+    .postcard {
+      background: white;
+      border-radius: 10px;
+      border: 2.5px solid #E0E0E0;
+      box-shadow: 0 0 0 2px rgba(0,0,0,0.06), 4px 6px 18px rgba(0,0,0,0.22);
+      overflow: hidden;
+      width: 230px;
+    }
+
+    .postcard-top {
+      display: flex;
+      gap: 0;
+    }
+
+    .postcard-city {
+      flex: 1;
+      height: 100px;
+      overflow: hidden;
+      position: relative;
+    }
+    .postcard-city img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+    }
+    .city-overlay {
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      background: linear-gradient(to top, rgba(255,248,220,0.9), transparent);
+      padding: 4px 8px;
+    }
+    .city-text {
+      font-family: 'Caveat', cursive;
+      font-size: 13px;
+      font-weight: 700;
+      color: #5D4037;
+    }
+
+    .postcard-right {
+      width: 56px;
+      border-left: 1px solid #E0E0E0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 6px 4px;
+      gap: 6px;
+    }
+
+    .stamp {
+      width: 44px; height: 52px;
+      border: 2px solid #BDBDBD;
+      border-radius: 3px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      background: #FAFAFA;
+      font-size: 22px;
+    }
+    .stamp-lines {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      width: 100%;
+      padding: 0 4px;
+    }
+    .stamp-line {
+      height: 3px;
+      background: #BDBDBD;
+      border-radius: 2px;
+    }
+
+    .postcard-divider {
+      height: 1px;
+      background: #E0E0E0;
+    }
+
+    .postcard-form {
+      padding: 10px 12px 12px;
+    }
+    .postcard-form p {
+      font-family: 'Caveat', cursive;
+      font-size: 15px;
+      font-weight: 700;
+      color: #8D6E63;
+      text-align: center;
+      margin-bottom: 8px;
+    }
+
+    .form-field {
+      width: 100%;
+      border: 2px solid #B2DFDB;
+      border-radius: 8px;
+      padding: 6px 10px;
+      font-family: 'Nunito', sans-serif;
+      font-size: 12px;
+      background: #FAFAF5;
+      outline: none;
+      margin-bottom: 6px;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      display: block;
+    }
+    .form-field:focus {
+      border-color: var(--teal);
+      box-shadow: 0 0 0 3px rgba(0,121,107,0.14);
+    }
+    textarea.form-field { resize: none; }
+
+    .send-btn {
+      width: 100%;
+      background: linear-gradient(135deg, var(--teal), var(--teal-dark));
+      color: white;
+      border: 2px solid var(--teal-dark);
+      border-radius: 24px;
+      padding: 8px 16px;
+      font-family: 'Nunito', sans-serif;
+      font-weight: 900;
+      font-size: 12px;
+      cursor: pointer;
+      letter-spacing: 0.05em;
+      box-shadow: 0 4px 0 var(--teal-dark), 0 5px 12px rgba(0,0,0,0.2);
+      transition: transform 0.12s, box-shadow 0.12s;
+    }
+    .send-btn:hover  { transform: translateY(-2px); box-shadow: 0 6px 0 var(--teal-dark), 0 8px 16px rgba(0,0,0,0.22); }
+    .send-btn:active { transform: translateY(2px);  box-shadow: 0 2px 0 var(--teal-dark); }
+    #form-ok { display:none; color:var(--teal); font-size:13px; font-weight:800; text-align:center; margin-top:6px; }
+
+    /* ═══════════════════════════════════════════
+       GALLERY MODAL
+    ═══════════════════════════════════════════ */
+    #gallery-modal {
+      display: none;
+      position: fixed; inset: 0;
+      background: rgba(10,10,20,0.78);
+      z-index: 9990;
+      align-items: center;
+      justify-content: center;
+      backdrop-filter: blur(6px);
+    }
+    #gallery-modal.open { display: flex; }
+
+    .modal-box {
+      background: #1A1A2E;
+      border: 4px solid white;
+      border-radius: 22px;
+      box-shadow: 0 0 0 4px var(--outline), 0 24px 60px rgba(0,0,0,0.6);
+      padding: 22px;
+      max-width: 420px;
+      width: 92%;
+      position: relative;
+    }
+
+    .modal-title {
+      font-family: 'Nunito', sans-serif;
+      font-weight: 900;
+      font-size: 15px;
+      color: white;
+      text-align: center;
+      margin-bottom: 16px;
+      letter-spacing: 0.06em;
+    }
+
+    .carousel-frame {
+      width: 100%;
+      aspect-ratio: 4/3;
+      border: 5px solid white;
+      border-radius: 12px;
+      box-shadow: 0 0 0 3px var(--outline);
+      overflow: hidden;
+      position: relative;
+      background: #2D3250;
+    }
+    .carousel-frame-inner {
+      display: flex;
+      height: 100%;
+      transition: transform 0.42s cubic-bezier(.45,0,.55,1);
+    }
+    .carousel-slide {
+      min-width: 100%; height: 100%;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .carousel-slide img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+    }
+    .carousel-placeholder {
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      color: #90A4AE; font-family: 'Nunito', sans-serif;
+      gap: 8px;
+    }
+    .carousel-placeholder .big-emoji { font-size: 56px; }
+    .carousel-placeholder p { font-size: 13px; font-weight: 700; }
+
+    .carousel-controls {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 14px;
+    }
+    .car-btn {
+      width: 42px; height: 42px;
+      border-radius: 50%;
+      background: var(--teal);
+      border: 2px solid var(--teal-dark);
+      color: white;
+      font-size: 22px;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 4px 0 var(--teal-dark);
+      transition: transform 0.12s;
+      line-height: 1;
+    }
+    .car-btn:hover { transform: scale(1.08); }
+
+    .car-dots { display: flex; gap: 8px; }
+    .car-dot {
+      width: 10px; height: 10px;
+      border-radius: 50%;
+      background: #445;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.2s;
+    }
+    .car-dot.active { background: var(--teal); transform: scale(1.2); }
+
+    .modal-close {
+      position: absolute;
+      top: 10px; right: 14px;
+      background: none;
+      border: none;
+      color: rgba(255,255,255,0.5);
+      font-size: 24px;
+      cursor: pointer;
+      transition: color 0.15s;
+      line-height: 1;
+    }
+    .modal-close:hover { color: white; }
+
+    /* ═══════════════════════════════════════════
+       FOOTER
+    ═══════════════════════════════════════════ */
+    .footer {
+      text-align: center;
+      padding: 28px 20px 20px;
+      background: var(--cream);
+    }
+    .footer p {
+      font-size: 13px;
+      color: var(--wood-hi);
+      font-weight: 700;
+    }
+
+    /* ═══════════════════════════════════════════
+       RESPONSIVE
+    ═══════════════════════════════════════════ */
+    @media (max-width: 860px) {
+      .desk-row { flex-direction: column; align-items: center; }
+      .craft-area { margin-right: 0; }
+      .contact-area { margin-left: 0; }
+      .yarn-pile { margin-top: 8px; margin-left: 0; justify-content: center; }
+      .laptop-area { padding: 12px 0; }
+      .shelf-items { gap: 20px; }
+      .pins-row { gap: 12px; }
+    }
+    @media (max-width: 560px) {
+      .toolbox-lid, .toolbox-body { min-width: 220px; }
+      .tools-grid { grid-template-columns: repeat(3, 1fr); }
+      .album-cover { width: 150px; }
+      .pb-tagline { display: none; }
+      .postcard { width: 200px; }
+    }
+
+    /* Small float animation for cat */
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50%       { transform: translateY(-6px); }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════════════════
+     §1  WALL + PEGBOARD
+══════════════════════════════════════════════════════ -->
+<section class="wall">
+  <div class="pegboard-wrap">
+    <div class="pegboard">
+
+     
+        <!-- Tagline bubble -->
+        <div class="pb-tagline">
+          <p>iOS Developer · Crafter · Cat Mom 🐱 · Based in Riyadh</p>
+        </div>
+
+        
+
+      <div class="pins-row">
+
+  <a class="app-pin" href="https://apps.apple.com/app/id6449742649" title="Luna's World">
+    <div class="pin-body">
+      <div class="pin-icon">
+        <img src="assets/Apps/Luna's World.png" alt="Luna's World"/>
+      </div>
+    </div>
+    <span class="pin-label">luna's world</span>
+  </a>
+
+  <a class="app-pin" href="https://apps.apple.com/us/app/cipher-chase/id6473859489" title="Cipher Chase">
+    <div class="pin-body">
+      <div class="pin-icon">
+        <img src="assets/Apps/Cipher Chase.png" alt="Cipher Chase"/>
+      </div>
+    </div>
+    <span class="pin-label">cipher chase</span>
+  </a>
+
+  <a class="app-pin" href="https://apps.apple.com/us/app/%D8%A5%D8%AD%D8%A8%D9%83%D9%87%D8%A7/id6502529518" title="Ehbekha">
+    <div class="pin-body">
+      <div class="pin-icon">
+        <img src="assets/Apps/Ehbekha.png" alt="Ehbekha"/>
+      </div>
+    </div>
+    <span class="pin-label">ehbekha</span>
+  </a>
+
+  <a class="app-pin" href="https://apps.apple.com/us/app/liyoplanet-our-shared-world/id6761609759" title="Liyo Planet">
+    <div class="pin-body">
+      <div class="pin-icon">
+        <img src="assets/Apps/Liyo Planet.png" alt="Liyo Planet"/>
+      </div>
+    </div>
+    <span class="pin-label">liyo planet</span>
+  </a>
+
+  <a class="app-pin" href="https://apps.apple.com/us/app/reflectlymood/id6761758994" title="ReflectlyMood">
+    <div class="pin-body">
+      <div class="pin-icon">
+        <img src="assets/Apps/ReflectlyMood.png" alt="ReflectlyMood"/>
+      </div>
+    </div>
+    <span class="pin-label">reflectlymood</span>
+  </a>
+
+  <a class="app-pin" href="https://apps.apple.com/us/app/trahal-%D8%AA%D8%B1%D8%AD-%D9%84/id6477047439" title="Trahal">
+    <div class="pin-body">
+      <div class="pin-icon">
+        <img src="assets/Apps/Trahal.png" alt="Trahal"/>
+      </div>
+    </div>
+    <span class="pin-label">trahal</span>
+  </a>
+
+      </div><!-- /pins-row -->
+
+      <!-- Post-it notes (coming soon apps) -->
+      <div class="postits-row">
+        <div class="postit postit-1">
+          Coming<br>soon
+        </div>
+        <div class="postit postit-2">
+          Coming<br>soon
+        </div>
+      </div>
+
+    </div><!-- /pegboard -->
+  </div><!-- /pegboard-wrap -->
+</section>
+
+<!-- ══════════════════════════════════════════════════════
+     §2  SHELF
+══════════════════════════════════════════════════════ -->
+<section class="shelf-section">
+  <div class="shelf-plank">
+    <div class="shelf-board"></div>
+
+    <div class="shelf-items" style="padding-top:24px;">
+
+      <!-- ── RED TOOLBOX ── -->
+      <div class="toolbox-wrap">
+        <div class="toolbox-handle"></div>
+
+        <div class="toolbox-lid">
+          <div class="toolbox-lid-stripe"></div>
+          <div class="toolbox-lid-label">lujain tools</div>
+          <div class="toolbox-clasp"></div>
+        </div>
+
+        <div class="toolbox-body">
+          <div class="tools-grid">
+
+            <div class="skill-icon" style="margin-bottom:18px;">
+              <img src="assets/Swift.jpeg" alt="Swift">
+              <span class="skill-name">Swift</span>
+            </div>
+            <div class="skill-icon" style="margin-bottom:18px;">
+              <img src="assets/swiftui.jpeg" alt="SwiftUI">
+              <span class="skill-name">SwiftUI</span>
+            </div>
+            <div class="skill-icon" style="margin-bottom:18px;">
+              <img src="assets/SQL.png" alt="SQL">
+              <span class="skill-name">SQL</span>
+            </div>
+            <div class="skill-icon" style="margin-bottom:18px;">
+              <img src="assets/firebase.png" alt="Firebase">
+              <span class="skill-name">Firebase</span>
+            </div>
+            <div class="skill-icon" style="margin-bottom:18px;">
+              <img src="assets/gemini.png" alt="Gemini">
+              <span class="skill-name">Gemini</span>
+            </div>
+            <div class="skill-icon" style="margin-bottom:18px;">
+              <img src="assets/claude.svg" alt="Claude">
+              <span class="skill-name">Claude</span>
+            </div>
+            <div class="skill-icon" style="margin-bottom:18px;">
+              <img src="assets/python.png" alt="Python">
+              <span class="skill-name">Python</span>
+            </div>
+            <!-- Placeholder 8th slot with sparkle -->
+            <div class="skill-icon" style="margin-bottom:18px;background:#F3E5F5;border-color:#F3E5F5;">
+              <span style="font-size:28px;">✨</span>
+              <span class="skill-name" style="color:#7B1FA2;">+more</span>
+            </div>
+
+          </div>
+          <div class="toolbox-rivets">
+            <div class="rivet"></div>
+            <div class="rivet"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── PHOTO ALBUM ── -->
+      <div class="album-wrap" onclick="openGallery()" title="View cat gallery">
+        <div class="album-book">
+          <div class="album-spine"></div>
+          <div class="album-cover">
+
+            <div class="wizard-cat-wrap" 
+     title="✨" 
+     style="display: flex; justify-content: center; align-items: center;">
+     
+  <svg viewBox="0 0 70 70" width="68" height="68" shape-rendering="crispEdges">
+    
+    <rect x="62" y="32" width="4" height="4" fill="#FFD700" />
+    <rect x="60" y="26" width="3" height="3" fill="#CE93D8" />
+    
+    <rect x="52" y="40" width="8" height="8"  fill="#FFD700" />
+    <rect x="50" y="42" width="12" height="4" fill="#FFD700" />
+    
+    <rect x="54" y="46" width="4" height="22" fill="#5D4037" rx="2" />
+
+    <rect x="30" y="4" width="10" height="8" fill="#7B1FA2" />
+    
+    <rect x="24" y="10" width="22" height="22" fill="#6A1B9A" />
+    
+    <rect x="32" y="20" width="6" height="2" fill="#FFD700" />
+    <rect x="33" y="18" width="4" height="6" fill="#FFD700" />
+    
+    <rect x="16" y="30" width="38" height="5" fill="#7B1FA2" />
+
+    <rect x="18" y="32" width="8" height="10" fill="#9E9E9E" />
+    <rect x="44" y="32" width="8" height="10" fill="#9E9E9E" />
+    <rect x="20" y="34" width="4" height="6"  fill="#F8BBD9" />
+    <rect x="46" y="34" width="4" height="6"  fill="#F8BBD9" />
+
+    <rect x="16" y="38" width="38" height="24" fill="#9E9E9E" />
+
+    <rect x="22" y="42" width="8" height="10" fill="#263238" rx="2" />
+    <rect x="40" y="42" width="8" height="10" fill="#263238" rx="2" />
+    <rect x="23" y="43" width="3" height="3"  fill="white" />
+    <rect x="41" y="43" width="3" height="3"  fill="white" />
+
+    <rect x="18" y="52" width="6" height="4" fill="#F8BBD9" opacity="0.5" />
+    <rect x="46" y="52" width="6" height="4" fill="#F8BBD9" opacity="0.5" />
+    <rect x="32" y="52" width="6" height="4" fill="#F48FB1" />
+
+    <rect x="6"  y="54" width="14" height="1" fill="#757575" />
+    <rect x="6"  y="57" width="14" height="1" fill="#757575" />
+    <rect x="50" y="54" width="14" height="1" fill="#757575" />
+    <rect x="50" y="57" width="14" height="1" fill="#757575" />
+    
+  </svg>
+</div>
+            <div class="album-title">📸 Photo Album</div>
+
+
+            <div class="album-photos">
+              <div class="album-thumb">
+                <img src="assets/cats/luna.jpg" alt="cat" onerror="this.parentElement.innerHTML='🐈'">
+              </div>
+              <div class="album-thumb" style="background:#CE93D8;">
+                <img src="assets/cats/cat7.jpg" alt="cat" onerror="this.parentElement.innerHTML='😺'">
+              </div>
+            </div>
+
+            <!-- "tap to open" overlay -->
+            <div style="position:absolute;top:50%;left:60%;transform:translate(-50%,-50%);background:rgba(0,0,0,0.42);border-radius:18px;padding:4px 12px;pointer-events:none;">
+              <p style="color:white;font-size:10px;font-weight:800;white-space:nowrap;">tap to open 📂</p>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- ── CLIPBOARD / RESUME ── -->
+      <div class="clipboard-wrap">
+        <div class="clipboard-board">
+
+          <div class="clip-clamp">
+            <div class="clip-top"><div class="clip-spring-bar"></div></div>
+            <div class="clip-bottom"></div>
+          </div>
+
+          <div class="resume-paper">
+            <div class="resume-header">
+              <p style="color:white;font-size:8px;font-weight:900;letter-spacing:0.08em;">LUJAIN ALAYDIE</p>
+              <p style="color:#B2DFDB;font-size:7px;font-weight:700;">iOS Developer</p>
+            </div>
+
+            <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px;">
+              <div style="width:24px;height:24px;background:#E0E0E0;border-radius:50%;flex-shrink:0;"></div>
+              <div style="flex:1;">
+                <div class="res-line dark" style="width:80%;margin-bottom:3px;"></div>
+                <div class="res-line" style="width:60%;"></div>
+              </div>
+            </div>
+
+            <div style="height:1px;background:#E0E0E0;margin-bottom:6px;"></div>
+
+            <p style="font-size:7px;font-weight:900;color:var(--teal-dark);margin-bottom:4px;letter-spacing:0.05em;">EXPERIENCE</p>
+            <div class="res-line head" style="width:100%;"></div>
+            <div class="res-line" style="width:88%;"></div>
+            <div class="res-line" style="width:76%;margin-bottom:6px;"></div>
+            <div class="res-line head" style="width:100%;"></div>
+            <div class="res-line" style="width:80%;margin-bottom:6px;"></div>
+
+            <p style="font-size:7px;font-weight:900;color:var(--teal-dark);margin-bottom:4px;letter-spacing:0.05em;">EDUCATION</p>
+            <div class="res-line head" style="width:100%;"></div>
+            <div class="res-line" style="width:70%;margin-bottom:6px;"></div>
+
+            <p style="font-size:7px;font-weight:900;color:var(--teal-dark);margin-bottom:4px;letter-spacing:0.05em;">SKILLS</p>
+            <div style="margin-bottom:8px;">
+              <span class="skill-pill" style="background:#E8F5E9;color:#2E7D32;border:1px solid #A5D6A7;">Swift</span>
+              <span class="skill-pill" style="background:#E3F2FD;color:#1565C0;border:1px solid #90CAF9;">SwiftUI</span>
+              <span class="skill-pill" style="background:#FFF8E1;color:#E65100;border:1px solid #FFD54F;">Firebase</span>
+              <span class="skill-pill" style="background:#F3E5F5;color:#6A1B9A;border:1px solid #CE93D8;">Python</span>
+            </div>
+
+            <a href="assets/Resume.pdf" target="_blank" class="resume-dl">📄 VIEW FULL RESUME</a>
+          </div>
+
+        </div>
+      </div>
+
+    </div><!-- /shelf-items -->
+  </div>
+</section>
+
+
+<!-- ══════════════════════════════════════════════════════
+     §3  DESK
+══════════════════════════════════════════════════════ -->
+<section class="desk-section">
+  <div class="desk-edge"></div>
+
+  <div class="desk-surface">
+    <div class="desk-row">
+
+      <!-- ── LEFT: CRICUT + YARN + GLITTER ── -->
+      <div class="craft-area">
+
+        <!-- Cricut mat -->
+        <div class="cricut-mat">
+          <span class="mat-label" style="bottom:10px;left:10px;">Cricut</span>
+          <span class="mat-label" style="top:10px;right:10px;transform:rotate(180deg);">Cricut</span>
+        </div>
+
+          <!-- Crochet hooks -->
+          <div class="mat-tools">
+            <!-- Pink hook -->
+            <div style="display:flex;flex-direction:column;align-items:center;">
+              <div class="hook-handle" style="width:8px;height:70px;background:linear-gradient(to bottom,#F06292,#E91E63);"></div>
+              <div class="hook-tip"></div>
+            </div>
+            <!-- Purple hook -->
+            <div style="display:flex;flex-direction:column;align-items:center;">
+              <div class="hook-handle" style="width:7px;height:80px;background:linear-gradient(to bottom,#AB47BC,#7B1FA2);"></div>
+              <div class="hook-tip"></div>
+            </div>
+            <!-- Teal hook -->
+            <div style="display:flex;flex-direction:column;align-items:center;">
+              <div class="hook-handle" style="width:6px;height:95px;background:linear-gradient(to bottom,#26C6DA,#00838F);"></div>
+              <div class="hook-tip"></div>
+            </div>
+            <!-- Orange hook -->
+            <div style="display:flex;flex-direction:column;align-items:center;">
+              <div class="hook-handle" style="width:7px;height:65px;background:linear-gradient(to bottom,#FFA726,#E65100);"></div>
+              <div class="hook-tip"></div>
+            </div>
+            <!-- Silver scalpel -->
+            <div style="display:flex;flex-direction:column;align-items:center;margin-left:3px;">
+              <div style="width:5px;height:80px;background:linear-gradient(to right,#BDBDBD,#EEEEEE,#BDBDBD);border-radius:2px;"></div>
+              <div style="width:0;height:0;border-left:4px solid transparent;border-right:4px solid transparent;border-top:16px solid #9E9E9E;"></div>
+            </div>
+          </div>
+
+          <!-- Washi tape rolls -->
+          <div class="washi-tape" style="width:34px;height:34px;top:100px;left:72px;background:radial-gradient(circle,transparent 8px,#FF8A80 8px,#FF8A80 17px,transparent 17px);border:2px solid rgba(0,0,0,0.12);">
+            <div class="washi-inner" style="width:18px;height:18px;top:8px;left:8px;"></div>
+          </div>
+          <div class="washi-tape" style="width:30px;height:30px;top:138px;left:76px;background:radial-gradient(circle,transparent 7px,#80DEEA 7px,#80DEEA 15px,transparent 15px);border:2px solid rgba(0,0,0,0.12);">
+            <div class="washi-inner" style="width:16px;height:16px;top:7px;left:7px;"></div>
+          </div>
+
+         
+        <!-- Yarn pile (overlapping below mat) -->
+        <div class="yarn-pile">
+          <div class="yarn" style="width:58px;height:58px;background:radial-gradient(circle at 38% 35%,#EF5350,#B71C1C);"></div>
+          <div class="yarn" style="width:48px;height:48px;background:radial-gradient(circle at 38% 35%,#F48FB1,#C2185B);margin-top:20px;"></div>
+          <div class="yarn" style="width:52px;height:52px;background:radial-gradient(circle at 38% 35%,#FFD54F,#F57F17);"></div>
+          <div class="yarn" style="width:42px;height:42px;background:radial-gradient(circle at 38% 35%,#81D4FA,#0277BD);margin-top:15px;"></div>
+          <div class="yarn" style="width:50px;height:50px;background:radial-gradient(circle at 38% 35%,#CE93D8,#7B1FA2);"></div>
+          <div class="yarn" style="width:38px;height:38px;background:radial-gradient(circle at 38% 35%,#A5D6A7,#2E7D32);margin-top:9px;"></div>
+        </div>
+
+        <!-- Glitter bottles -->
+        <div class="glitter-row">
+          <!-- Pink glitter -->
+          <div class="glitter-bottle">
+            <div class="bottle-cap" style="height:10px;width:14px;background:linear-gradient(to bottom,#F48FB1,#E91E63);"></div>
+            <div class="bottle-body" style="width:14px;height:44px;background:linear-gradient(135deg,#FFCDD2,#F8BBD9);">
+              <div class="bottle-shine" style="height:18px;"></div>
+              <div class="bottle-glitter"></div>
+            </div>
+          </div>
+          <!-- Teal glitter -->
+          <div class="glitter-bottle">
+            <div class="bottle-cap" style="height:10px;width:14px;background:linear-gradient(to bottom,#4DD0E1,#00838F);"></div>
+            <div class="bottle-body" style="width:14px;height:52px;background:linear-gradient(135deg,#E0F7FA,#80DEEA);">
+              <div class="bottle-shine" style="height:22px;"></div>
+              <div class="bottle-glitter"></div>
+            </div>
+          </div>
+          <!-- Gold glitter -->
+          <div class="glitter-bottle">
+            <div class="bottle-cap" style="height:10px;width:14px;background:linear-gradient(to bottom,#FFD54F,#F57F17);"></div>
+            <div class="bottle-body" style="width:14px;height:46px;background:linear-gradient(135deg,#FFF9C4,#FFE082);">
+              <div class="bottle-shine" style="height:20px;"></div>
+              <div class="bottle-glitter"></div>
+            </div>
+          </div>
+          <!-- Purple glitter -->
+          <div class="glitter-bottle">
+            <div class="bottle-cap" style="height:10px;width:14px;background:linear-gradient(to bottom,#CE93D8,#7B1FA2);"></div>
+            <div class="bottle-body" style="width:14px;height:56px;background:linear-gradient(135deg,#F3E5F5,#E1BEE7);">
+              <div class="bottle-shine" style="height:24px;"></div>
+              <div class="bottle-glitter"></div>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /craft-area -->
+
+
+      <!-- ── CENTER: LAPTOP ── -->
+      <div class="laptop-area">
+        <div class="laptop-wrap">
+
+          <!-- Screen lid -->
+          <div class="laptop-lid">
+            <div class="laptop-cam"></div>
+
+            <!-- Terminal screen -->
+            <div class="terminal" id="terminal">
+              <div class="term-titlebar">
+                <div class="term-dot" style="background:#FF5F57;"></div>
+                <div class="term-dot" style="background:#FEBC2E;"></div>
+                <div class="term-dot" style="background:#28C840;"></div>
+                <span class="term-title-text">McBook Pro — sql</span>
+              </div>
+              <div id="term-out"></div><span class="t-cursor" id="cursor"></span>
+            </div>
+          </div>
+
+          <!-- Hinge -->
+          <div class="laptop-hinge"></div>
+
+          <!-- Base / keyboard -->
+          <div class="laptop-base">
+            <div class="kb-row">
+              <div class="kb-key"></div><div class="kb-key"></div><div class="kb-key"></div>
+              <div class="kb-key"></div><div class="kb-key"></div><div class="kb-key"></div>
+              <div class="kb-key"></div><div class="kb-key"></div><div class="kb-key"></div>
+              <div class="kb-key"></div><div class="kb-key"></div><div class="kb-key"></div>
+              <div class="kb-key"></div>
+            </div>
+            <div class="kb-row">
+              <div class="kb-key" style="grid-column:span 2;"></div>
+              <div class="kb-key"></div><div class="kb-key"></div><div class="kb-key"></div>
+              <div class="kb-key"></div><div class="kb-key"></div><div class="kb-key"></div>
+              <div class="kb-key"></div><div class="kb-key"></div><div class="kb-key"></div>
+              <div class="kb-key" style="grid-column:span 3;"></div>
+            </div>
+            <div class="trackpad"></div>
+          </div>
+        </div>
+
+     
+
+      </div><!-- /laptop-area -->
+
+
+      <!-- ── RIGHT: CAT + POSTCARD ── -->
+      <div class="contact-area">
+
+
+        <!-- POSTCARD / CONTACT FORM -->
+        <div class="postcard">
+
+          <!-- Top: Riyadh photo + stamp -->
+          <div class="postcard-top">
+            <div class="postcard-city">
+              <img src="assets/riyadh.jpg" alt="Greetings from Riyadh" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+              <!-- Fallback SVG skyline if photo fails -->
+              <div style="display:none;width:100%;height:100%;background:linear-gradient(to bottom,#FFF8E1,#FFECB3);align-items:flex-end;overflow:hidden;">
+                <svg viewBox="0 0 170 100" width="100%" height="100%">
+                  <rect x="0" y="72" width="170" height="28" fill="#8D6E63"/>
+                  <rect x="70" y="18" width="16" height="54" fill="#8D8D8D"/>
+                  <rect x="72" y="14" width="12" height="6" fill="#9E9E9E"/>
+                  <rect x="76" y="10" width="4" height="6" fill="#9E9E9E"/>
+                  <!-- arch -->
+                  <rect x="74" y="22" width="8" height="10" fill="#FFF8E1"/>
+                  <rect x="48" y="26" width="12" height="46" fill="#8D8D8D"/>
+                  <polygon points="48,26 54,8 60,26" fill="#757575"/>
+                  <circle cx="54" cy="8" r="4" fill="#FFD54F"/>
+                  <rect x="10" y="42" width="10" height="30" fill="#9E9E9E"/>
+                  <rect x="22" y="36" width="12" height="36" fill="#8D8D8D"/>
+                  <rect x="36" y="48" width="10" height="24" fill="#9E9E9E"/>
+                  <rect x="90" y="38" width="10" height="34" fill="#9E9E9E"/>
+                  <rect x="102" y="30" width="12" height="42" fill="#8D8D8D"/>
+                  <rect x="116" y="44" width="10" height="28" fill="#9E9E9E"/>
+                  <rect x="128" y="36" width="10" height="36" fill="#9E9E9E"/>
+                  <rect x="140" y="48" width="10" height="24" fill="#8D8D8D"/>
+                  <circle cx="148" cy="12" r="6" fill="rgba(255,220,100,0.7)"/>
+                  <path d="M145 12 A6 6 0 0 0 151 12 A4 4 0 0 1 145 12Z" fill="rgba(255,220,100,0.9)"/>
+                </svg>
+              </div>
+              <div class="city-overlay">
+                <p class="city-text">Greetings from Riyadh 🇸🇦</p>
+              </div>
+            </div>
+
+            <div class="postcard-right">
+              <div class="stamp">🇸🇦</div>
+              <div class="stamp-lines">
+                <div class="stamp-line"></div>
+                <div class="stamp-line" style="width:70%;"></div>
+                <div class="stamp-line"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="postcard-divider"></div>
+
+          <div class="postcard-form">
+            <p>✉ get in touch</p>
+<form id="contact-form"
+  action="https://formspree.io/f/mykloqlq"
+  method="POST"
+>              <input class="form-field" type="text"  placeholder="Name"    required>
+              <input class="form-field" type="email" placeholder="Email"   required>
+              <textarea class="form-field" rows="3"  placeholder="Message" required></textarea>
+              <button type="submit" class="send-btn">SEND→</button>
+            </form>
+            <p id="form-ok">✓ Message sent! I'll reply soon 🐱</p>
+          </div>
+
+        </div><!-- /postcard -->
+      </div><!-- /contact-area -->
+
+    </div><!-- /desk-row -->
+  </div><!-- /desk-surface -->
+</section>
+
+
+<!-- ══════════════════════════════════════════════════════
+     GALLERY MODAL
+══════════════════════════════════════════════════════ -->
+<div id="gallery-modal" onclick="closeOnBackdrop(event)">
+  <div class="modal-box">
+    
+    <button class="modal-close" onclick="closeGallery()">✕</button>
+    <p class="modal-title">🐱 My Cat Gallery</p>
+
+    <div class="carousel-frame">
+      <div class="carousel-frame-inner" id="car-inner">
+
+        <div class="carousel-slide">
+          <img src="assets/cats/luna.jpg" alt="cat 1" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+          <div class="carousel-placeholder" style="display:none;">
+            <div class="big-emoji">🐱</div>
+            <p>cat photo 1</p>
+            <p style="font-size:11px;opacity:0.6;">add to assets/cats/cat1.jpg</p>
+          </div>
+        </div>
+
+        <div class="carousel-slide">
+          <img src="assets/cats/cat2.JPG" alt="cat 2" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+          <div class="carousel-placeholder" style="display:none;">
+            <div class="big-emoji">😺</div>
+            <p>cat photo 2</p>
+          </div>
+        </div>
+
+        <div class="carousel-slide">
+          <img src="assets/cats/cat3.JPG" alt="cat 3" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+          <div class="carousel-placeholder" style="display:none;">
+            <div class="big-emoji">🐈</div>
+            <p>cat photo 3</p>
+          </div>
+        </div>
+
+        <div class="carousel-slide">
+          <img src="assets/cats/cat4.JPG" alt="cat 4" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+          <div class="carousel-placeholder" style="display:none;">
+            <div class="big-emoji">😸</div>
+            <p>cat photo 4</p>
+          </div>
+        </div>
+
+        <div class="carousel-slide">
+          <img src="assets/cats/cat5.jpg" alt="cat 1" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+          <div class="carousel-placeholder" style="display:none;">
+            <div class="big-emoji">🐱</div>
+            <p>cat photo 1</p>
+            <p style="font-size:11px;opacity:0.6;">add to assets/cats/cat1.jpg</p>
+          </div>
+        </div>
+
+        <div class="carousel-slide">
+          <img src="assets/cats/cat7.jpg" alt="cat 4" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+          <div class="carousel-placeholder" style="display:none;">
+            <div class="big-emoji">😸</div>
+            <p>cat photo 7</p>
+          </div>
+        </div>
+
+        <div class="carousel-slide">
+          <img src="assets/cats/cat8.jpg" alt="cat 1" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+          <div class="carousel-placeholder" style="display:none;">
+            <div class="big-emoji">🐱</div>
+            <p>cat photo 1</p>
+            <p style="font-size:11px;opacity:0.6;">add to assets/cats/cat1.jpg</p>
+          </div>
+        </div>
+
+        <div class="carousel-slide">
+          <img src="assets/cats/cat9.jpg" alt="cat 1" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+          <div class="carousel-placeholder" style="display:none;">
+            <div class="big-emoji">🐱</div>
+            <p>cat photo 1</p>
+            <p style="font-size:11px;opacity:0.6;">add to assets/cats/cat1.jpg</p>
+          </div>
+        </div>
+
+
+        <div class="carousel-slide">
+          <img src="assets/cats/cat10.jpg" alt="cat 1" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+          <div class="carousel-placeholder" style="display:none;">
+            <div class="big-emoji">🐱</div>
+            <p>cat photo 1</p>
+            <p style="font-size:11px;opacity:0.6;">add to assets/cats/cat1.jpg</p>
+          </div>
+        </div>
+
+        <div class="carousel-slide">
+          <img src="assets/cats/cat11.jpg" alt="cat 1" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+          <div class="carousel-placeholder" style="display:none;">
+            <div class="big-emoji">🐱</div>
+            <p>cat photo 1</p>
+            <p style="font-size:11px;opacity:0.6;">add to assets/cats/cat1.jpg</p>
+          </div>
+        </div>
+
+        <div class="carousel-slide">
+          <img src="assets/cats/cat1.JPG" alt="cat 1" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+          <div class="carousel-placeholder" style="display:none;">
+            <div class="big-emoji">🐱</div>
+            <p>cat photo 1</p>
+            <p style="font-size:11px;opacity:0.6;">add to assets/cats/cat1.jpg</p>
+          </div>
+        </div>
+
+        <div class="carousel-slide">
+          <img src="assets/cats/cat12.jpg" alt="cat 1" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+          <div class="carousel-placeholder" style="display:none;">
+            <div class="big-emoji">🐱</div>
+            <p>cat photo 1</p>
+            <p style="font-size:11px;opacity:0.6;">add to assets/cats/cat1.jpg</p>
+          </div>
+        </div>
+        
+      </div> </div> <div class="carousel-controls">
+      <button class="car-btn" onclick="carPrev()">‹</button>
+      <div class="car-dots" id="car-dots"></div>
+      <button class="car-btn" onclick="carNext()">›</button>
+    </div>
+
+  </div> </div> 
+
+
+<!-- ══════════════════════════════════════════════════════
+     FOOTER
+══════════════════════════════════════════════════════ -->
+<footer class="footer">
+  <p>© 2025 Lujain Alaydie &nbsp;·&nbsp; Built with Claude &amp; a sprinkle of 🐱</p>
+</footer>
+
+
+<!-- ══════════════════════════════════════════════════════
+     JAVASCRIPT
+══════════════════════════════════════════════════════ -->
+<script>
+/* ─── Terminal Typewriter ──────────────────────────── */
+const SCRIPT = [
+  { c:'cmt', t:'-- McBook Pro  ~  sql\n' },
+  { c:'pmt', t:'lujain@mcbook ~ % ' },
+  { c:'nrm', t: '\n' },
+  { c:'pmt', t:'> ' },
+  { c:'key', t:'SELECT' },
+  { c:'nrm', t:' * ' },
+  { c:'key', t:'FROM' },
+  { c:'nrm', t:' passions\n' },
+  { c:'key', t:'WHERE' },
+  { c:'nrm', t:' passions.obsessions ' },
+  { c:'key', t:'IN' },
+  { c:'nrm', t:' (\n' },
+  { c:'nrm', t:"  " },
+  { c:'str', t:"'iOS Development'" },
+  { c:'nrm', t:",\n  " },
+  { c:'str', t:"'Cats'" },
+  { c:'nrm', t:",\n  " },
+  { c:'str', t:"'Crafts'" },
+  { c:'nrm', t:",\n  " },
+  { c:'str', t:"'Tools'\n" },
+  { c:'nrm', t:");\n\n" },
+  { c:'res', t:'-- 4 rows returned ✓\n' },
+  { c:'pmt', t:'> ' },
+];
+
+const COLOR = { cmt:'#6b7280', pmt:'#4ade80', key:'#f97316', str:'#60a5fa', nrm:'#e5e7eb', res:'#a3e635' };
+
+const termOut = document.getElementById('term-out');
+const cursorEl = document.getElementById('cursor');
+let charIdx = 0, scriptIdx = 0, posInToken = 0;
+let currentSpan = null;
+
+function buildChar() {
+  if (scriptIdx >= SCRIPT.length) {
+    // restart after pause
+    setTimeout(() => {
+      termOut.innerHTML = '';
+      scriptIdx = 0; posInToken = 0; charIdx = 0; currentSpan = null;
+      buildChar();
+    }, 3600);
+    return;
+  }
+
+  const tok = SCRIPT[scriptIdx];
+  const ch = tok.t[posInToken];
+
+  if (!currentSpan || currentSpan.dataset.color !== tok.c) {
+    currentSpan = document.createElement('span');
+    currentSpan.style.color = COLOR[tok.c] || '#e5e7eb';
+    currentSpan.dataset.color = tok.c;
+    termOut.appendChild(currentSpan);
+  }
+
+  if (ch === '\n') {
+    currentSpan.appendChild(document.createElement('br'));
+  } else {
+    currentSpan.appendChild(document.createTextNode(ch));
+  }
+
+  posInToken++;
+  if (posInToken >= tok.t.length) { posInToken = 0; scriptIdx++; currentSpan = null; }
+
+  charIdx++;
+  // auto-scroll terminal
+  const t = document.getElementById('terminal');
+  t.scrollTop = t.scrollHeight;
+
+  // dynamic speed
+  const delay = (tok.c === 'res') ? 30 : (tok.c === 'cmt' || tok.c === 'pmt') ? 50 : 38;
+  setTimeout(buildChar, delay);
+}
+
+setTimeout(buildChar, 900);
+
+
+/* ─── Gallery / Carousel ───────────────────────────── */
+let carSlide = 0;
+const carTotal = 12;
+
+function openGallery() {
+  document.getElementById('gallery-modal').classList.add('open');
+  buildDots();
+  updateCar();
+}
+function closeGallery() {
+  document.getElementById('gallery-modal').classList.remove('open');
+}
+function closeOnBackdrop(e) {
+  if (e.target === document.getElementById('gallery-modal')) closeGallery();
+}
+function carNext() { carSlide = (carSlide + 1) % carTotal; updateCar(); }
+function carPrev() { carSlide = (carSlide - 1 + carTotal) % carTotal; updateCar(); }
+function updateCar() {
+  document.getElementById('car-inner').style.transform = `translateX(-${carSlide * 100}%)`;
+  document.querySelectorAll('.car-dot').forEach((d,i) => d.classList.toggle('active', i === carSlide));
+}
+function buildDots() {
+  const c = document.getElementById('car-dots');
+  if (c.children.length) return;
+  for (let i = 0; i < carTotal; i++) {
+    const d = document.createElement('div');
+    d.className = 'car-dot' + (i===0?' active':'');
+    d.onclick = () => { carSlide = i; updateCar(); };
+    c.appendChild(d);
+  }
+}
+
+document.addEventListener('keydown', e => {
+  if (!document.getElementById('gallery-modal').classList.contains('open')) return;
+  if (e.key === 'ArrowRight') carNext();
+  if (e.key === 'ArrowLeft')  carPrev();
+  if (e.key === 'Escape')     closeGallery();
+});
+
+</script>
+
+</body>
+</html>
